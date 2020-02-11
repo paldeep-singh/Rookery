@@ -2,23 +2,36 @@ import React from 'react';
 import './App.css';
 import neo4j from 'neo4j-driver';
 import Button from '@material-ui/core/Button';
-import SpacingGrid from './Components/Grid';
+import Grid from '@material-ui/core/Grid';
+import Typography from "@material-ui/core/Typography"
+import CssBaseline from "@material-ui/core/CssBaseline"
+import { Card, CardContent } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+
+const buttonStyles = {
+  justifyContent: 'left'
+}
+
+const isSearched = searchTerm => alcoholName =>
+  alcoholName.toLowerCase().includes(searchTerm.toLowerCase());
 
 class App extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
-      myBar: []
+      alcoholList: [],
+      myBar: [],
+      searchTerm: '',
+      filteredList: []
     }
   }
 
   async getData() {
     let resultData = []
     let driver = await neo4j.driver(
-      '',
-      neo4j.auth.basic('', '')
+      process.env.REACT_APP_NEO4J_URL,
+      neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
     )
     let session = await driver.session()
     session
@@ -32,7 +45,7 @@ class App extends React.Component {
         })
       })
       .then(() => {
-        this.setState({ data: resultData })
+        this.setState({ alcoholList: resultData, filteredList: resultData })
       })
       .catch(error => {
         console.log(error)
@@ -66,25 +79,70 @@ class App extends React.Component {
     });
   }
 
+  handleSearchChange = (event) => {
+    this.setState({
+      searchTerm: event.target.value
+    })
+    this.handleDisplayAlcoholList(this.state.searchTerm)
+  }
+
+  handleFilterAlcohol(filterTerm) {
+    return this.state.alcoholList.filter(function (el) {
+      return el.toLowerCase().includes(filterTerm.toLowerCase())
+    })
+  }
+
+  handleDisplayAlcoholList(filterTerm) {
+    let workingAlcoholList = []
+    if (this.state.searchTerm === '') {
+      workingAlcoholList = this.state.alcoholList
+    }
+    else {
+      workingAlcoholList = this.handleFilterAlcohol(filterTerm)
+    }
+    this.setState({
+      filteredList: workingAlcoholList
+    })
+  }
+
   render() {
     return (
       <>
-        <p>Alcohol options:
-        <ul>
-            {this.state.data.map(item =>
-              <li>
-                <Button size="small" onClick={() => this.addToBar(item)}>{item}</Button>
-              </li>
-            )}
-          </ul></p>
-        <p>My Bar
-        <ul>
-            {this.state.myBar.map(item =>
-              <li>
-                <Button size="small" onClick={() => this.removeFromBar(item)}>{item}</Button>
-              </li>
-            )}
-          </ul></p>
+        <CssBaseline />
+        <Grid container spacing={3} justify="center">
+          <Grid item xs={3}>
+            <Card variant="outlined">
+              <CardContent>
+                <form noValidate autoComplete="off">
+                  <TextField id="standard-basic"
+                    label="What alcohol do you have?"
+                    fullWidth={true}
+                    value={this.state.searchTerm}
+                    onChange={this.handleSearchChange}
+                  />
+                </form> <br />
+                {this.state.filteredList.map(item =>
+                  <Button fullWidth={true} style={buttonStyles} onClick={() => this.addToBar(item)}>{item}</Button>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={3}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h5" >
+                  My Bar
+              </Typography>
+                <br />
+                {this.state.myBar.map(item =>
+
+                  <Button fullWidth={true} style={buttonStyles} onClick={() => this.removeFromBar(item)}>{item}</Button>
+
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </>
     )
   };
