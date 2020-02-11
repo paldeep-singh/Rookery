@@ -7,9 +7,18 @@ import Typography from "@material-ui/core/Typography"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import { Card, CardContent } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 
 const buttonStyles = {
   justifyContent: 'left'
+}
+
+const listStyles = {
+  maxHeight: 225,
+  position: 'relative',
+  overflow: 'auto',
+  minHeight: 225
 }
 
 const isSearched = searchTerm => alcoholName =>
@@ -22,12 +31,13 @@ class App extends React.Component {
     this.state = {
       alcoholList: [],
       myBar: [],
+      cocktailList: [],
       searchTerm: '',
-      filteredList: []
+      filterTerm: ''
     }
   }
 
-  async getData() {
+  async getAlcohols() {
     let resultData = []
     let driver = await neo4j.driver(
       process.env.REACT_APP_NEO4J_URL,
@@ -45,7 +55,41 @@ class App extends React.Component {
         })
       })
       .then(() => {
-        this.setState({ alcoholList: resultData, filteredList: resultData })
+        this.setState({ alcoholList: resultData })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+      .then(() => session.close())
+  }
+
+  async getCocktails() {
+    let resultData = []
+    let driver = await neo4j.driver(
+      process.env.REACT_APP_NEO4J_URL,
+      neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
+    )
+    let session = await driver.session()
+    session
+      .run(
+        `MATCH (i:Alcohol)
+          WHERE i.name IN $checkList
+          WITH COLLECT(i) AS available_alcohol
+          MATCH (r:Cocktail)-[:CONTAINS_INGREDIENT]->(i:Alcohol)
+          WITH available_alcohol, r, COLLECT(i) AS recipe_ingredients
+          WHERE ALL(x IN recipe_ingredients WHERE x IN available_alcohol)
+          RETURN r
+          ORDER BY SIZE(recipe_ingredients) DESC`,
+        { checkList: this.state.myBar }
+      )
+      .then(result => {
+        result.records.forEach(record => {
+          resultData.push(
+            record.toObject().r.properties.name)
+        })
+      })
+      .then(() => {
+        this.setState({ cocktailList: resultData })
       })
       .catch(error => {
         console.log(error)
@@ -54,7 +98,8 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.getData();
+    this.getAlcohols()
+    this.getCocktails()
   }
 
   addToBar(alcohol) {
@@ -67,6 +112,7 @@ class App extends React.Component {
     this.setState({
       myBar: updateBar
     });
+    this.getCocktails()
   }
 
   removeFromBar(alcohol) {
@@ -77,31 +123,18 @@ class App extends React.Component {
     this.setState({
       myBar: updateBar
     });
+    this.getCocktails()
   }
 
   handleSearchChange = (event) => {
     this.setState({
       searchTerm: event.target.value
     })
-    this.handleDisplayAlcoholList(this.state.searchTerm)
   }
 
-  handleFilterAlcohol(filterTerm) {
-    return this.state.alcoholList.filter(function (el) {
-      return el.toLowerCase().includes(filterTerm.toLowerCase())
-    })
-  }
-
-  handleDisplayAlcoholList(filterTerm) {
-    let workingAlcoholList = []
-    if (this.state.searchTerm === '') {
-      workingAlcoholList = this.state.alcoholList
-    }
-    else {
-      workingAlcoholList = this.handleFilterAlcohol(filterTerm)
-    }
+  handleFilterChange = (event) => {
     this.setState({
-      filteredList: workingAlcoholList
+      filterTerm: event.target.value
     })
   }
 
@@ -114,33 +147,56 @@ class App extends React.Component {
             <Card variant="outlined">
               <CardContent>
                 <form noValidate autoComplete="off">
+                  <Typography variant="subtitle1" align="center" paragraph={true} >
+                    Add alcohol to your bar.
+                  </Typography>
                   <TextField id="standard-basic"
-                    label="What alcohol do you have?"
+                    label="Type here to search"
                     fullWidth={true}
                     value={this.state.searchTerm}
                     onChange={this.handleSearchChange}
                   />
-                </form> <br />
-                {this.state.filteredList.map(item =>
-                  <Button fullWidth={true} style={buttonStyles} onClick={() => this.addToBar(item)}>{item}</Button>
-                )}
+                </form>
+                <List style={listStyles}>
+                  {this.state.alcoholList.filter(isSearched(this.state.searchTerm)).map(item =>
+                    <ListItem>
+                      <Button fullWidth={true} style={buttonStyles} onClick={() => this.addToBar(item)}>{item}</Button></ListItem>
+                  )}</List>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={3}>
             <Card variant="outlined">
               <CardContent>
-                <Typography variant="h5" >
-                  My Bar
+                <Typography variant="subtitle1" align="center" paragraph={true} >
+                  Your Bar (click to remove)
               </Typography>
-                <br />
-                {this.state.myBar.map(item =>
-
-                  <Button fullWidth={true} style={buttonStyles} onClick={() => this.removeFromBar(item)}>{item}</Button>
-
-                )}
+                <TextField id="standard-basic"
+                  label="Type here to filter"
+                  fullWidth={true}
+                  value={this.state.filterTerm}
+                  onChange={this.handleFilterChange}
+                />
+                <List style={listStyles}>
+                  {this.state.myBar.filter(isSearched(this.state.filterTerm)).map(item =>
+                    <ListItem>
+                      <Button fullWidth={true} style={buttonStyles} onClick={() => this.removeFromBar(item)}>{item}</Button>
+                    </ListItem>
+                  )}
+                </List>
               </CardContent>
             </Card>
+          </Grid>
+        </Grid>
+        <Grid container spacing={3} justify="center">
+          <Grid item xs={6}>
+            <Card variant="outlined" ></Card>
+            <CardContent>
+              {this.state.cocktailList.map(item =>
+
+                <Button fullWidth={true} style={buttonStyles} onClick={() => this.removeFromBar(item)}>{item}</Button>
+              )}
+            </CardContent>
           </Grid>
         </Grid>
       </>

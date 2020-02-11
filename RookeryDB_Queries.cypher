@@ -11,6 +11,17 @@ MATCH (n:ingredients)
 RETURN n
 
 //Display cocktails that can be made with specific ingredients
+
+MATCH (i:Alcohol)
+WHERE i.name IN ["Vodka","Coffee Liqueur"]
+WITH COLLECT(i) AS available_alcohol
+MATCH (r:Cocktail)-[:CONTAINS_INGREDIENT]->(i:Alcohol)
+WITH available_alcohol, r, COLLECT(i) AS recipe_ingredients
+WHERE ALL(x IN recipe_ingredients WHERE x IN available_alcohol)
+RETURN r
+ORDER BY SIZE(recipe_ingredients) DESC
+
+
 MATCH (c:Cocktail)-[:CONTAINS_INGREDIENT]->(i:Ingredient)
 WHERE i.name IN //List of ingredients
 RETURN c.name as cocktail, [(c)-[:CONTAINS_INGREDIENT]->(o:Ingredient) | o.name] AS ingredients, [(g:Ingredient)<-[:IS_GARNISHED_WITH]-(c) | g.name] AS garnish
