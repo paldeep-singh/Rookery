@@ -9,6 +9,7 @@ import { Card, CardContent } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import CocktailDialog from './Components/CocktailDialog'
 
 const buttonStyles = {
   justifyContent: 'left'
@@ -31,9 +32,11 @@ class App extends React.Component {
     this.state = {
       alcoholList: [],
       myBar: [],
-      cocktailList: [],
+      cocktailList: [], //Cocktails missing no alcohol
+      cocktailList2: [], //Cocktails missing 1 alcohol
       searchTerm: '',
-      filterTerm: ''
+      filterTerm: '',
+      selectedCocktail: {}
     }
   }
 
@@ -63,7 +66,7 @@ class App extends React.Component {
       .then(() => session.close())
   }
 
-  async getCocktails() {
+  async getCocktailsMissingNone() {
     let resultData = []
     let driver = await neo4j.driver(
       process.env.REACT_APP_NEO4J_URL,
@@ -73,13 +76,13 @@ class App extends React.Component {
     session
       .run(
         `MATCH (i:Alcohol)
-          WHERE i.name IN $checkList
-          WITH COLLECT(i) AS available_alcohol
-          MATCH (r:Cocktail)-[:CONTAINS_INGREDIENT]->(i:Alcohol)
-          WITH available_alcohol, r, COLLECT(i) AS recipe_ingredients
-          WHERE ALL(x IN recipe_ingredients WHERE x IN available_alcohol)
-          RETURN r
-          ORDER BY SIZE(recipe_ingredients) DESC`,
+        WHERE i.name IN $checkList
+        WITH COLLECT(i) AS available_alcohol
+        MATCH (r:Cocktail)-[:CONTAINS_INGREDIENT]->(i:Alcohol)
+        WITH available_alcohol, r, COLLECT(i) AS recipe_ingredients
+        WHERE ALL(x IN recipe_ingredients WHERE x IN available_alcohol)
+        RETURN r
+        ORDER BY r.name`,
         { checkList: this.state.myBar }
       )
       .then(result => {
@@ -97,9 +100,76 @@ class App extends React.Component {
       .then(() => session.close())
   }
 
+  async getCocktailsMissingOne() {
+    let resultData = []
+    let driver = await neo4j.driver(
+      process.env.REACT_APP_NEO4J_URL,
+      neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
+    )
+    let session = await driver.session()
+    session
+      .run(
+        `MATCH (i:Alcohol)
+        WHERE i.name IN $checkList
+        WITH COLLECT(i) AS available_alcohol
+        MATCH (r:Cocktail)-[:CONTAINS_INGREDIENT]->(i:Alcohol)
+        WITH available_alcohol, r, COLLECT(i) AS recipe_ingredients
+        WHERE SINGLE(x IN recipe_ingredients WHERE NOT x IN available_alcohol)
+        RETURN r
+        ORDER BY r.name`,
+        { checkList: this.state.myBar }
+      )
+      .then(result => {
+        result.records.forEach(record => {
+          resultData.push(
+            record.toObject().r.properties.name)
+        })
+      })
+      .then(() => {
+        this.setState({ cocktailList2: resultData })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+      .then(() => session.close())
+  }
+
+  async getSpecificCocktail(selectedCocktail) {
+    let resultData = {}
+    let driver = await neo4j.driver(
+      process.env.REACT_APP_NEO4J_URL,
+      neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
+    )
+    let session = await driver.session()
+    session
+      .run(
+        `MATCH (c:Cocktail)
+        WHERE c.name = $cocktailName
+        RETURN c`,
+        { cocktailName: selectedCocktail }
+      )
+      .then(result => {
+        result.records.forEach(record => {
+          resultData = record.toObject().r
+        })
+      })
+      .then(() => {
+        this.setState({ selectedCocktail: resultData })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+      .then(() => session.close())
+  }
+
   componentDidMount() {
     this.getAlcohols()
     this.getCocktails()
+  }
+
+  getCocktails() {
+    this.getCocktailsMissingNone()
+    this.getCocktailsMissingOne()
   }
 
   addToBar(alcohol) {
@@ -137,6 +207,8 @@ class App extends React.Component {
       filterTerm: event.target.value
     })
   }
+
+  handleViewCocktail() { }
 
   render() {
     return (
@@ -188,17 +260,48 @@ class App extends React.Component {
             </Card>
           </Grid>
         </Grid>
+        <CssBaseline />
         <Grid container spacing={3} justify="center">
-          <Grid item xs={6}>
-            <Card variant="outlined" ></Card>
-            <CardContent>
-              {this.state.cocktailList.map(item =>
+          <Grid item xs={3}>
+            <Card variant="outlined" >
+              <CardContent>
+                <Typography variant="subtitle1" align="center" paragraph={true} >
+                  Available Cocktails:
+              </Typography>
+                <List style={listStyles}>
+                  {this.state.cocktailList.map(item =>
+                    <ListItem>
 
-                <Button fullWidth={true} style={buttonStyles} onClick={() => this.removeFromBar(item)}>{item}</Button>
-              )}
-            </CardContent>
+                      <Button fullWidth={true} style={buttonStyles} onClick={() => this.getSpecificCocktail(item)}>{item}</Button>
+
+                      <CocktailDialog></CocktailDialog>
+
+                    </ListItem>
+                  )}
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={3}>
+            <Card variant="outlined" >
+              <CardContent>
+                <Typography variant="subtitle1" align="center" paragraph={true} >
+                  Cocktails missing one ingredient:
+              </Typography>
+                <List style={listStyles}>
+
+                  {this.state.cocktailList2.map(item =>
+                    <ListItem>
+
+                      <Button fullWidth={true} style={buttonStyles}>{item}</Button></ListItem>
+                  )}
+
+                </List>
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
+
       </>
     )
   };
