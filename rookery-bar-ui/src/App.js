@@ -30,57 +30,69 @@ const listStyles = {
 const isSearched = searchTerm => alcoholName =>
   alcoholName.toLowerCase().includes(searchTerm.toLowerCase());
 
-class CocktailDialog extends React.Component {
+async function getSpecificCocktail(selectedCocktail) {
+  let resultData = {}
+  let driver = await neo4j.driver(
+    process.env.REACT_APP_NEO4J_URL,
+    neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
+  )
+  let session = await driver.session()
+  session
+    .run(
+      `MATCH (c:Cocktail)
+        WHERE c.name = $cocktailName
+        RETURN c`,
+      { cocktailName: selectedCocktail }
+    )
+    .then(result => {
+      result.records.forEach(record => {
+        resultData = record.toObject().r
+      })
+    })
+    .catch(error => {
+      console.log(error)
+    })
+    .then(() => session.close())
+  return resultData
+}
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      cocktailName: "",
-      cocktailIngredients: "",
-      cocktailMethod: "",
-      dialogOpen: false
-    }
-  }
-  handleClickOpen = () => {
-    this.setState({
-      dialogOpen: true
-    });
+function CocktailDialog(props) {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
   };
 
-  handleClose = () => {
-    this.setState({
-      dialogOpen: false
-    })
-  }
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-  render() {
-    return (
-      <div>
-        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-          {this.cocktailName}
-        </Button>
-        <Dialog
-          open={this.dialogOpen}
-          onClose={this.handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{"Cocktail Recipe"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              <p>Ingredients:</p>
-              <p>Method:</p>
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary" autoFocus>
-              Close
+  return (
+    <div>
+      <Button onClick={handleClickOpen}>
+        {props.cocktailName}
+      </Button>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Cocktail Recipe"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <p>ingredients</p>
+            <p>method</p>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary" autoFocus>
+            Close
           </Button>
-          </DialogActions>
-        </Dialog>
-      </div >
-    );
-  }
+        </DialogActions>
+      </Dialog>
+    </div >
+  );
 }
 
 class App extends React.Component {
@@ -341,9 +353,7 @@ class App extends React.Component {
                 <List style={listStyles}>
                   {this.state.cocktailList.map(item =>
                     <ListItem>
-
-                      <Button fullWidth={true} style={buttonStyles} onClick={() => this.getSpecificCocktail(item)}>{item}</Button>
-                      <CocktailDialog></CocktailDialog>
+                      <CocktailDialog cocktailName={item}></CocktailDialog>
                     </ListItem>
                   )}
                 </List>
