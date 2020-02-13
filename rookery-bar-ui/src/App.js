@@ -9,7 +9,12 @@ import { Card, CardContent } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import CocktailDialog from './Components/CocktailDialog'
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 
 const buttonStyles = {
   justifyContent: 'left'
@@ -25,6 +30,59 @@ const listStyles = {
 const isSearched = searchTerm => alcoholName =>
   alcoholName.toLowerCase().includes(searchTerm.toLowerCase());
 
+class CocktailDialog extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      cocktailName: "",
+      cocktailIngredients: "",
+      cocktailMethod: "",
+      dialogOpen: false
+    }
+  }
+  handleClickOpen = () => {
+    this.setState({
+      dialogOpen: true
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      dialogOpen: false
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+          {this.cocktailName}
+        </Button>
+        <Dialog
+          open={this.dialogOpen}
+          onClose={this.handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Cocktail Recipe"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <p>Ingredients:</p>
+              <p>Method:</p>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary" autoFocus>
+              Close
+          </Button>
+          </DialogActions>
+        </Dialog>
+      </div >
+    );
+  }
+}
+
 class App extends React.Component {
 
   constructor(props) {
@@ -36,7 +94,8 @@ class App extends React.Component {
       cocktailList2: [], //Cocktails missing 1 alcohol
       searchTerm: '',
       filterTerm: '',
-      selectedCocktail: {}
+      selectedCocktail: {},
+      dialogOpen: false
     }
   }
 
@@ -160,6 +219,7 @@ class App extends React.Component {
         console.log(error)
       })
       .then(() => session.close())
+    this.handleCloseDialog()
   }
 
   componentDidMount() {
@@ -208,7 +268,17 @@ class App extends React.Component {
     })
   }
 
-  handleViewCocktail() { }
+  handleOpenDialog = () => {
+    this.setState({
+      dialogOpen: true
+    })
+  }
+
+  handleCloseDialog = () => {
+    this.setState({
+      dialogOpen: false
+    })
+  }
 
   render() {
     return (
@@ -273,9 +343,7 @@ class App extends React.Component {
                     <ListItem>
 
                       <Button fullWidth={true} style={buttonStyles} onClick={() => this.getSpecificCocktail(item)}>{item}</Button>
-
                       <CocktailDialog></CocktailDialog>
-
                     </ListItem>
                   )}
                 </List>
