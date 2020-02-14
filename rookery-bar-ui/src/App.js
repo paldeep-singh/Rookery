@@ -78,7 +78,7 @@ function CocktailDialog(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Cocktail Recipe"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{props.cocktailName + " Recipe"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <p>ingredients</p>
@@ -363,7 +363,7 @@ class App extends React.Component {
                         onClose={this.handleCloseDialog}
                         aria-labelledby="alert-dialog-title"
                         aria-describedby="alert-dialog-description">
-                        <DialogTitle id="alert-dialog-title">{"Cocktail Recipe"}</DialogTitle>
+                        <DialogTitle id="alert-dialog-title">{item + " Recipe"}</DialogTitle>
                         <DialogContent>
                           <DialogContentText id="alert-dialog-description">
                             <p>ingredients</p>
