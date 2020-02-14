@@ -225,6 +225,9 @@ class App extends React.Component {
         })
       })
       .then(() => {
+        console.log(resultData)
+      })
+      .then(() => {
         this.setState({ selectedCocktail: resultData })
       })
       .catch(error => {
@@ -352,8 +355,28 @@ class App extends React.Component {
               </Typography>
                 <List style={listStyles}>
                   {this.state.cocktailList.map(item =>
-                    <ListItem>
-                      <CocktailDialog cocktailName={item}></CocktailDialog>
+                    <ListItem><div>
+                      <Button onClick={this.handleOpenDialog}>
+                        {item}
+                      </Button>
+                      <Dialog open={this.state.dialogOpen}
+                        onClose={this.handleCloseDialog}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description">
+                        <DialogTitle id="alert-dialog-title">{"Cocktail Recipe"}</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText id="alert-dialog-description">
+                            <p>ingredients</p>
+                            <p>method</p>
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={this.handleCloseDialog} color="primary" autoFocus>
+                            Close
+          </Button>
+                        </DialogActions>
+                      </Dialog>
+                      <CocktailDialog cocktailName={item}></CocktailDialog></div>
                     </ListItem>
                   )}
                 </List>
