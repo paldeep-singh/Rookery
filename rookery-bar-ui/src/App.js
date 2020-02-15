@@ -104,9 +104,7 @@ class App extends React.Component {
       cocktailList: [], //Cocktails missing no alcohol
       cocktailList2: [], //Cocktails missing 1 alcohol
       searchTerm: '',
-      filterTerm: '',
-      selectedCocktail: {},
-      dialogOpen: false
+      filterTerm: ''
     }
   }
 
@@ -137,13 +135,14 @@ class App extends React.Component {
   }
 
   async getCocktailsMissingNone() {
-    let resultData = []
-    let driver = await neo4j.driver(
+
+    let driver = neo4j.driver(
       process.env.REACT_APP_NEO4J_URL,
       neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
     )
-    let session = await driver.session()
-    session
+    let session = driver.session()
+
+    let result = await session
       .run(
         `MATCH (i:Alcohol)
         WHERE i.name IN $checkList
@@ -155,29 +154,25 @@ class App extends React.Component {
         ORDER BY r.name`,
         { checkList: this.state.myBar }
       )
-      .then(result => {
-        result.records.forEach(record => {
-          resultData.push(
-            record.toObject().r.properties.name)
-        })
-      })
-      .then(() => {
-        this.setState({ cocktailList: resultData })
-      })
-      .catch(error => {
-        console.log(error)
-      })
-      .then(() => session.close())
+
+    let resultData = []
+    result.records.forEach(record => {
+      resultData.push(
+        record.toObject().r.properties.name)
+    })
+
+    this.setState({ cocktailList: resultData })
+
+    session.close()
   }
 
   async getCocktailsMissingOne() {
-    let resultData = []
-    let driver = await neo4j.driver(
+    let driver = neo4j.driver(
       process.env.REACT_APP_NEO4J_URL,
       neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
     )
-    let session = await driver.session()
-    session
+    let session = driver.session()
+    let result = await session
       .run(
         `MATCH (i:Alcohol)
         WHERE i.name IN $checkList
@@ -189,51 +184,16 @@ class App extends React.Component {
         ORDER BY r.name`,
         { checkList: this.state.myBar }
       )
-      .then(result => {
-        result.records.forEach(record => {
-          resultData.push(
-            record.toObject().r.properties.name)
-        })
-      })
-      .then(() => {
-        this.setState({ cocktailList2: resultData })
-      })
-      .catch(error => {
-        console.log(error)
-      })
-      .then(() => session.close())
-  }
 
-  async getSpecificCocktail(selectedCocktail) {
-    let resultData = {}
-    let driver = await neo4j.driver(
-      process.env.REACT_APP_NEO4J_URL,
-      neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
-    )
-    let session = await driver.session()
-    session
-      .run(
-        `MATCH (c:Cocktail)
-        WHERE c.name = $cocktailName
-        RETURN c`,
-        { cocktailName: selectedCocktail }
-      )
-      .then(result => {
-        result.records.forEach(record => {
-          resultData = record.toObject().r
-        })
-      })
-      .then(() => {
-        console.log(resultData)
-      })
-      .then(() => {
-        this.setState({ selectedCocktail: resultData })
-      })
-      .catch(error => {
-        console.log(error)
-      })
-      .then(() => session.close())
-    this.handleCloseDialog()
+    let resultData = []
+    result.records.forEach(record => {
+      resultData.push(
+        record.toObject().r.properties.name)
+    })
+
+    this.setState({ cocktailList2: resultData })
+
+    session.close()
   }
 
   componentDidMount() {
@@ -279,18 +239,6 @@ class App extends React.Component {
   handleFilterChange = (event) => {
     this.setState({
       filterTerm: event.target.value
-    })
-  }
-
-  handleOpenDialog = () => {
-    this.setState({
-      dialogOpen: true
-    })
-  }
-
-  handleCloseDialog = () => {
-    this.setState({
-      dialogOpen: false
     })
   }
 
