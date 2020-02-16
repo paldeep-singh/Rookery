@@ -109,29 +109,25 @@ class App extends React.Component {
   }
 
   async getAlcohols() {
-    let resultData = []
-    let driver = await neo4j.driver(
+    let driver = neo4j.driver(
       process.env.REACT_APP_NEO4J_URL,
       neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
     )
-    let session = await driver.session()
-    session
+    let session = driver.session()
+    let result = await session
       .run(
         'MATCH (n:Alcohol) RETURN n ORDER BY n.name'
       )
-      .then(result => {
-        result.records.forEach(record => {
-          resultData.push(
-            record.toObject().n.properties.name)
-        })
-      })
-      .then(() => {
-        this.setState({ alcoholList: resultData })
-      })
-      .catch(error => {
-        console.log(error)
-      })
-      .then(() => session.close())
+
+    let resultData = []
+    result.records.forEach(record => {
+      resultData.push(
+        record.toObject().n.properties.name)
+    })
+
+    this.setState({ alcoholList: resultData })
+
+    session.close()
   }
 
   async getCocktailsMissingNone() {
@@ -322,7 +318,8 @@ class App extends React.Component {
                   {this.state.cocktailList2.map(item =>
                     <ListItem key={item}>
 
-                      <Button fullWidth={true} style={buttonStyles}>{item}</Button></ListItem>
+                      <CocktailDialog cocktailName={item}></CocktailDialog>
+                    </ListItem>
                   )}
 
                 </List>
