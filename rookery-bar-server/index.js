@@ -1,18 +1,45 @@
 require('dotenv').config()
+const { check, validationResult, query, body, param } = require('express-validator');
 const express = require('express')
+const bodyParser = require('body-parser');
 const app = express()
+app.use(bodyParser.json())
 const port = 8080
 var neo4j = require('neo4j-driver')
 
 app.get('/', (req, res) => res.send('Rookery Bar App Server GTFO'))
 
-app.get('/alcohol-list', async function (req, res) { alcoholList = await getAlcohols(), res.send(alcoholList) })
-app.get('/cocktail-list-none', async function (req, res) { newList = req.query.a , cocktailList = await getCocktailsMissingNone(newList), res.send(cocktailList)})
-app.get('/cocktail-list-one', async function (req, res) { newList = req.query.a , cocktailList = await getCocktailsMissingOne(newList), res.send(cocktailList) })
-app.get('/cocktail', async function (req, res) {cocktail = req.query.a , selectedCocktail = await getSpecificCocktail(cocktail), res.send(selectedCocktail)})
+app.get('/api/alcohol', async function (req, res) {
+    alcoholList = await getAlcohols(),
+        res.json(alcoholList)
+})
+app.get('/api/cocktail',
+    [query('filter').not().isEmpty(), body('alcoholList').isArray()],
+    async function (req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(500).json({ errors: errors.array() });
+        }
+        else if (req.query.filter === "none-missing") {
 
+            cocktailList = await getCocktailsMissingNone(req.body.alcoholList)
+            res.json(cocktailList)
 
-//http://localhost:3001/cocktail-list-one/?a=Vodka&a=blah
+        }
+        else if (req.query.filter === "one-missing") {
+            cocktailList = await getCocktailsMissingOne(req.body.alcoholList)
+            res.json(cocktailList)
+        }
+        else {
+            return res.status(500).json("filter value must be none-missing or one-missing")
+        }
+    })
+
+app.get('/api/cocktail/:cocktailName', [param('cocktailName').not().isEmpty()],
+    async function (req, res) {
+        selectedCocktail = await getSpecificCocktail(req.params.cocktailName),
+            res.json(selectedCocktail)
+    })
 
 app.listen(port, () => console.log(`Rookery Bar App Server listening on port ${port}!`))
 
@@ -49,10 +76,9 @@ async function getAlcohols() {
     let resultData = []
     result.records.forEach(record => {
         resultData.push(
-            record.toObject().n.properties.name)
+            record.toObject().n.properties)
     })
     session.close()
-    console.log(resultData)
     return resultData
 }
 
