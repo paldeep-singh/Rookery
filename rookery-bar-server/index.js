@@ -6,15 +6,17 @@ const app = express()
 app.use(bodyParser.json())
 const port = 8080
 var neo4j = require('neo4j-driver')
+const greeting = 'You must leave'
 
-app.get('/', (req, res) => res.send('Rookery Bar App Server GTFO'))
+
+app.get('/', (req, res) => res.send(greeting))
 
 app.get('/api/alcohol', async function (req, res) {
     alcoholList = await getAlcohols(),
         res.json(alcoholList)
 })
 app.get('/api/cocktail',
-    [query('filter').not().isEmpty(), body('alcoholList').isArray()],
+    [query('filter').not().isEmpty(), query('alcohol').isArray()],
     async function (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -22,12 +24,12 @@ app.get('/api/cocktail',
         }
         else if (req.query.filter === "none-missing") {
 
-            cocktailList = await getCocktailsMissingNone(req.body.alcoholList)
+            cocktailList = await getCocktailsMissingNone(req.query.alcohol)
             res.json(cocktailList)
 
         }
         else if (req.query.filter === "one-missing") {
-            cocktailList = await getCocktailsMissingOne(req.body.alcoholList)
+            cocktailList = await getCocktailsMissingOne(req.query.alcohol)
             res.json(cocktailList)
         }
         else {
