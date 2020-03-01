@@ -16,6 +16,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 
+const axios = require('axios').default
 const buttonStyles = {
   justifyContent: 'left'
 }
@@ -109,29 +110,41 @@ class App extends React.Component {
   }
 
   async getAlcohols() {
-    let driver = neo4j.driver(
-      process.env.REACT_APP_NEO4J_URL,
-      neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
-    )
-    let session = driver.session()
-    let result = await session
-      .run(
-        'MATCH (n:Alcohol) RETURN n ORDER BY n.name'
-      )
 
     let resultData = []
-    result.records.forEach(record => {
-      resultData.push(
-        record.toObject().n.properties.name)
-    })
+    await axios.get('https://rookery-bar-app-server-269602.appspot.com/api/alcohol')
+      .then(function (response) {
+        // handle success
+        console.log(response);
+        let x = 0
+        response.data.forEach(record => {
+          resultData.push(
+            response.data[x].name)
+          x += 1
+        })
 
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
     this.setState({ alcoholList: resultData })
 
-    session.close()
+    console.log(this.state.alcoholList)
   }
 
   async getCocktailsMissingNone() {
 
+    let requestAddress = 'https://rookery-bar-app-server-269602.appspot.com/api/cocktail/?filter=1&alcohol='
+    console.log(requestAddress)
+    if (this.state.myBar.length === 1) {
+      requestAddress = requestAddress + this.state.myBar[0] + ',blah'
+      console.log(requestAddress)
+    }
+
+
+
+    await axios.get('https://rookery-bar-app-server-269602.appspot.com/api/cocktail/?filter=1')
     let driver = neo4j.driver(
       process.env.REACT_APP_NEO4J_URL,
       neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)

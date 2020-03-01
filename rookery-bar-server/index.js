@@ -12,12 +12,14 @@ const greeting = 'You must leave'
 app.get('/', (req, res) => res.send(greeting))
 
 app.get('/api/alcohol', async function (req, res) {
+    res.set('Access-Control-Allow-Origin', '*');
     alcoholList = await getAlcohols(),
         res.json(alcoholList)
 })
 app.get('/api/cocktail',
     [query('filter').not().isEmpty(), query('alcohol').isArray()],
     async function (req, res) {
+        res.set('Access-Control-Allow-Origin', '*');
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(500).json({ errors: errors.array() });
@@ -39,6 +41,7 @@ app.get('/api/cocktail',
 
 app.get('/api/cocktail/:cocktailName', [param('cocktailName').not().isEmpty()],
     async function (req, res) {
+        res.set('Access-Control-Allow-Origin', '*');
         selectedCocktail = await getSpecificCocktail(req.params.cocktailName),
             res.json(selectedCocktail)
     })
