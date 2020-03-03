@@ -115,7 +115,6 @@ class App extends React.Component {
     await axios.get('https://rookery-bar-app-server-269602.appspot.com/api/alcohol')
       .then(function (response) {
         // handle success
-        console.log(response);
         let x = 0
         response.data.forEach(record => {
           resultData.push(
@@ -129,22 +128,46 @@ class App extends React.Component {
         console.log(error);
       });
     this.setState({ alcoholList: resultData })
-
-    console.log(this.state.alcoholList)
   }
 
   async getCocktailsMissingNone() {
 
-    let requestAddress = 'https://rookery-bar-app-server-269602.appspot.com/api/cocktail/?filter=1&alcohol='
+    //create address to use
+    let requestAddress = 'https://rookery-bar-app-server-269602.appspot.com/api/cocktail/?filter=none-missing'
     console.log(requestAddress)
+
     if (this.state.myBar.length === 1) {
-      requestAddress = requestAddress + this.state.myBar[0] + ',blah'
+      requestAddress = encodeURI(requestAddress + '&alcohol=' + this.state.myBar[0] + '&alcohol=blah')
+      console.log(requestAddress)
+    }
+    else if (this.state.myBar.length > 1) {
+      let x = 0
+      while (x < this.state.myBar.length) {
+        requestAddress = requestAddress + '&alcohol=' + this.state.myBar[x]
+        x += 1
+      }
+      encodeURI(requestAddress)
       console.log(requestAddress)
     }
 
+    let resultData = []
+    await axios.get(requestAddress)
+      .then(function (response) {
+        // handle success
+        //let x = 0
+        //response.data.forEach(record => {
+        //resultData.push(
+        //response.data[x].name)
+        //x += 1
+        //})
+        console.log(response)
 
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
 
-    await axios.get('https://rookery-bar-app-server-269602.appspot.com/api/cocktail/?filter=1')
     let driver = neo4j.driver(
       process.env.REACT_APP_NEO4J_URL,
       neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
@@ -163,8 +186,6 @@ class App extends React.Component {
         ORDER BY r.name`,
         { checkList: this.state.myBar }
       )
-
-    let resultData = []
     result.records.forEach(record => {
       resultData.push(
         record.toObject().r.properties.name)

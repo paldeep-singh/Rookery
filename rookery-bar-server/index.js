@@ -6,10 +6,19 @@ const app = express()
 app.use(bodyParser.json())
 const port = 8080
 var neo4j = require('neo4j-driver')
-const greeting = 'You must leave'
+const greeting =
+    `.#####...######...####...######..#####...######...####...######..######..#####............####...#####...######...####..
+.##..##..##......##........##....##..##....##....##..##....##....##......##..##..........##..##..##..##..##......##..##.
+.#####...####.....####.....##....#####.....##....##........##....####....##..##..........######..#####...####....######.
+.##..##..##..........##....##....##..##....##....##..##....##....##......##..##..........##..##..##..##..##......##..##.
+.##..##..######...####.....##....##..##..######...####.....##....######..#####...........##..##..##..##..######..##..##.
+........................................................................................................................`
+
+console.log(greeting)
 
 
-app.get('/', (req, res) => res.send(greeting))
+app.get('/', (req, res) => res.send(greeting
+))
 
 app.get('/api/alcohol', async function (req, res) {
     res.set('Access-Control-Allow-Origin', '*');
@@ -111,9 +120,8 @@ async function getCocktailsMissingNone(availableAlcohol) {
     let resultData = []
     result.records.forEach(record => {
         resultData.push(
-            record.toObject().r.properties.name)
+            record.toObject().r.properties)
     })
-    console.log(resultData)
     session.close()
     return resultData
 }
@@ -140,7 +148,7 @@ async function getCocktailsMissingOne(availableAlcohol) {
     let resultData = []
     result.records.forEach(record => {
         resultData.push(
-            record.toObject().r.properties.name)
+            record.toObject().r.properties)
     })
     console.log(resultData)
 
