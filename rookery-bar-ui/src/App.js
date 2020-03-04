@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import neo4j from 'neo4j-driver';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from "@material-ui/core/Typography"
@@ -32,20 +31,21 @@ const isSearched = searchTerm => alcoholName =>
   alcoholName.toLowerCase().includes(searchTerm.toLowerCase());
 
 async function getSpecificCocktail(selectedCocktail) {
-  let driver = neo4j.driver(
-    process.env.REACT_APP_NEO4J_URL,
-    neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
-  )
-  let session = driver.session()
-  let result = await session
-    .run(
-      `MATCH (c:Cocktail)
-        WHERE c.name = $cocktailName
-        RETURN c`,
-      { cocktailName: selectedCocktail }
-    )
-  let resultData = result.records[0].toObject().c.properties
-  session.close()
+
+  let requestAddress = 'https://rookery-bar-app-server-269602.appspot.com/api/cocktail/' + selectedCocktail
+
+  let resultData = undefined
+
+  await axios.get(requestAddress)
+    .then(function (response) {
+      resultData = response.data
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    });
+
+
   return resultData
 }
 
@@ -134,11 +134,9 @@ class App extends React.Component {
 
     //create address to use
     let requestAddress = 'https://rookery-bar-app-server-269602.appspot.com/api/cocktail/?filter=none-missing'
-    console.log(requestAddress)
 
     if (this.state.myBar.length === 1) {
-      requestAddress = encodeURI(requestAddress + '&alcohol=' + this.state.myBar[0] + '&alcohol=blah')
-      console.log(requestAddress)
+      requestAddress = requestAddress + '&alcohol=' + this.state.myBar[0] + '&alcohol=blah'
     }
     else if (this.state.myBar.length > 1) {
       let x = 0
@@ -146,84 +144,69 @@ class App extends React.Component {
         requestAddress = requestAddress + '&alcohol=' + this.state.myBar[x]
         x += 1
       }
-      encodeURI(requestAddress)
-      console.log(requestAddress)
     }
+    else if (this.state.myBar.length === 0) {
+      requestAddress = 'https://rookery-bar-app-server-269602.appspot.com/api/cocktail/?filter=none-missing&alcohol=blah&alcohol=blah'
+    }
+
+    encodeURI(requestAddress)
 
     let resultData = []
     await axios.get(requestAddress)
       .then(function (response) {
         // handle success
-        //let x = 0
-        //response.data.forEach(record => {
-        //resultData.push(
-        //response.data[x].name)
-        //x += 1
-        //})
-        console.log(response)
-
+        let x = 0
+        response.data.forEach(record => {
+          resultData.push(
+            response.data[x].name)
+          x += 1
+        })
       })
       .catch(function (error) {
         // handle error
         console.log(error);
       });
-
-    let driver = neo4j.driver(
-      process.env.REACT_APP_NEO4J_URL,
-      neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
-    )
-    let session = driver.session()
-
-    let result = await session
-      .run(
-        `MATCH (i:Alcohol)
-        WHERE i.name IN $checkList
-        WITH COLLECT(i) AS available_alcohol
-        MATCH (r:Cocktail)-[:CONTAINS_INGREDIENT]->(i:Alcohol)
-        WITH available_alcohol, r, COLLECT(i) AS recipe_ingredients
-        WHERE ALL(x IN recipe_ingredients WHERE x IN available_alcohol)
-        RETURN r
-        ORDER BY r.name`,
-        { checkList: this.state.myBar }
-      )
-    result.records.forEach(record => {
-      resultData.push(
-        record.toObject().r.properties.name)
-    })
-
     this.setState({ cocktailList: resultData })
-
-    session.close()
   }
 
   async getCocktailsMissingOne() {
-    let driver = neo4j.driver(
-      process.env.REACT_APP_NEO4J_URL,
-      neo4j.auth.basic(process.env.REACT_APP_NEO4J_USER, process.env.REACT_APP_NEO4J_PASSWORD)
-    )
-    let session = driver.session()
-    let result = await session
-      .run(
-        `MATCH (i:Alcohol)
-        WHERE i.name IN $checkList
-        WITH COLLECT(i) AS available_alcohol
-        MATCH (r:Cocktail)-[:CONTAINS_INGREDIENT]->(i:Alcohol)
-        WITH available_alcohol, r, COLLECT(i) AS recipe_ingredients
-        WHERE SINGLE(x IN recipe_ingredients WHERE NOT x IN available_alcohol)
-        RETURN r
-        ORDER BY r.name`,
-        { checkList: this.state.myBar }
-      )
+
+    //create address to use
+    let requestAddress = 'https://rookery-bar-app-server-269602.appspot.com/api/cocktail/?filter=one-missing'
+
+    if (this.state.myBar.length === 1) {
+      requestAddress = requestAddress + '&alcohol=' + this.state.myBar[0] + '&alcohol=blah'
+    }
+    else if (this.state.myBar.length > 1) {
+      let x = 0
+      while (x < this.state.myBar.length) {
+        requestAddress = requestAddress + '&alcohol=' + this.state.myBar[x]
+        x += 1
+      }
+    }
+    else if (this.state.myBar.length === 0) {
+      requestAddress = 'https://rookery-bar-app-server-269602.appspot.com/api/cocktail/?filter=one-missing&alcohol=blah&alcohol=blah'
+    }
+
+    encodeURI(requestAddress)
 
     let resultData = []
-    result.records.forEach(record => {
-      resultData.push(
-        record.toObject().r.properties.name)
-    })
-
+    await axios.get(requestAddress)
+      .then(function (response) {
+        // handle success
+        console.log(response)
+        let x = 0
+        response.data.forEach(record => {
+          resultData.push(
+            response.data[x].name)
+          x += 1
+        })
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
     this.setState({ cocktailList2: resultData })
-
-    session.close()
   }
 
   componentDidMount() {
