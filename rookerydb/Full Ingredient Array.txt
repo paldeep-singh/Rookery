@@ -1,0 +1,71 @@
+
+["Gin","Grand Marnier", "Amaretto","Baileys i│
+│rish cream","Cognac","Dark rum","Absolut Vodka","151 proof rum","Wild Turkey","│
+│Applejack","Strawberry schnapps","Vodka","│
+│Pisang Ambon","Kahlua","Vermouth│
+│","Light rum","Triple sec","Scotch","Sweet│
+│ Vermouth","Dry Vermouth","Orange bitters","maraschino l│
+│iqueur","Blended whiskey","Bourbon","Blackberry brandy", "Bitters","Frangelico","Campari","Jack Daniels","Midori melon liqueur","Rum","Te│
+│quila", "Crown Royal","│
+│Apricot brandy","Apple brandy","Wine","Benedictine","Lime","Peppermint│
+│ schnapps","Creme de Cassis","Fresh Lemon Juice","Hpnotiq","Pineapple │
+│Juice","Banana Liqueur","","Anise","Licorice root","Wormwood","Absolut│
+│ Kurant","Sprite","Ginger ale","Grape soda","Candy","Tea","Whipped cre│
+│am","Orange","Carrot","Southern Comfort","Passion fruit syrup","Sweet │
+│and sour","Water","Apple cider","Lime juice cordial","Champagne","Gree│
+│n Creme de Menthe","Blue Curacao","7-Up","Apple schnapps","Orange Juic│
+│e","Angostura Bitters","White Wine","Orange Peel","Cherry","Lemon vodk│
+│a","Chocolate ice-cream","Brandy","Sherry","Sloe gin","Yellow Chartreu│
+│se","Kummel","Rye whiskey","Red wine","Malibu rum","Gold tequila","Cre│
+│am of coconut","Pineapple","Cider","White Creme de Menthe","Apricot","│
+│Almond flavoring","Grain alcohol","Food coloring","Glycerine","Angelic│
+│a root","Almond","Allspice","Cinnamon","Coriander","Marjoram leaves","│
+│Iced tea","Maui","Mountain Dew","Ginger","Guava juice","Absolut Citron│
+│","Bitter lemon","Peach schnapps","Coconut liqueur","Jägermeister","Go│
+│ldschlager","Ginger beer","Lemon","Coconut rum","Cranberry Juice","Ber│
+│ries","Apple","Brown sugar","Cloves","Fresh Lime Juice","Sugar Syrup",│
+│"Kirschwasser","Strawberry liqueur","Strawberries","Schweppes Russchia│
+│n","Añejo rum","Dark Creme de Cacao","Hot chocolate","Sambuca","Orange│
+│ Bitters","Green Chartreuse","Irish cream","Sugar syrup","Creme de Mur│
+│e","Rye Whiskey","Maraschino Liqueur","Maraschino Cherry","Maraschino │
+│liqueur","Passion fruit juice","Galliano","Lime Juice","Prosecco","Cor│
+│ona","Bacardi Limon","Hot Chocolate","Cherry Heering","Banana liqueur"│
+│,"Everclear","Surge","Tomato juice","Worcestershire sauce","Tabasco sa│
+│uce","Powdered sugar","Egg","Ale","Guinness stout","Erin Cream","Advoc│
+│aat","Vanilla ice-cream","Vanilla Ice-Cream","Butterscotch schnapps","│
+│Dark Rum","Sweet and Sour","Gold rum","Triple Sec","Celery salt","Kool│
+│-Aid","Lemon-lime soda","Raisins","Blueberries","Coffee liqueur","Tia │
+│maria","Godiva liqueur","Chambord raspberry liqueur","Peachtree schnap│
+│ps","Passoa","Banana","Root beer","Malibu Rum","Carbonated water","Cho│
+│colate syrup","Cherry brandy","Yoghurt","Honey","Whipped Cream","caram│
+│el sauce","chocolate sauce","Mini-snickers bars","Cantaloupe","Coca-Co│
+│la","Cachaca","Spiced rum","Falernum","blackstrap rum","Port","Vanilla│
+│","Caramel coloring","White rum","Lager","Cointreau","Egg yolk","Vanil│
+│la extract","Chocolate liqueur","Chocolate","Peppermint extract","Choc│
+│olate milk","Cranberries","Lillet Blanc","Absinthe","Cocoa powder","Co│
+│rnstarch","Cherry Grenadine","gin","Peach Bitters","Blackcurrant cordi│
+│al","Fruit punch","Olive","Olive Brine","demerara Sugar","Pisco","Pine│
+│apple Syrup","St. Germain","Pepper","Lavender","Ginger Beer","Whiskey"│
+│,"Hot Damn","Dubonnet Rouge","Whipping cream","Vanilla syrup","Espress│
+│o","Condensed milk","Mezcal","Raspberry Liqueur","pineapple juice","Li│
+│llet","Firewater","Absolut Peppar","Dr. Pepper","Beer","Sarsaparilla",│
+│"Peach Vodka","Sirup of roses","Grapefruit Juice","Orange spiral","lem│
+│on","orange juice","Basil","Agave Syrup","Melon liqueur","Grapes","Whi│
+│sky","White Rum","Blackberries","Grape juice","Carbonated soft drink",│
+│"Sherbet","Irish whiskey","Corn syrup","Cherry Juice","Red Chili Flake│
+│s","Butter","Half-and-half","Marshmallows","Coconut syrup","Peach bran│
+│dy","Aperol","Anis","Jello","Mint syrup","Tennessee whiskey","Kiwi liq│
+│ueur","Cranberry vodka","Apfelkorn","Kiwi","Papaya","Lime peel","Angos│
+│tura bitters","Drambuie","Asafoetida","Cayenne pepper","Mango","Cumin │
+│seed","Orgeat syrup","Pina colada mix","Daiquiri mix","Pepsi Cola","Ca│
+│rdamom","Black pepper","Cucumber","Tropicana","Oreo cookie","Bailey","│
+│Jagermeister","Grape Soda","Apricot Brandy","Orange Curacao","Egg Yolk│
+│","Blended Scotch","Honey syrup","Ginger Syrup","Islay single malt Sco│
+│tch","Coconut milk","Cherry liqueur","Pink lemonade","Coffee brandy","│
+│Lime vodka","Black Sambuca","Raspberry syrup","Tonic Water","Rosemary"│
+│,"Raspberry vodka","Ricard","Peychaud bitters","Jim Beam","Anisette","│
+│Fresca","Cherries","Curacao","Aquavit","Ouzo","Blackcurrant squash","C│
+│hocolate Sauce","Salted Chocolate","Johnnie Walker","Fennel seeds","Ir│
+│ish Whiskey","Elderflower cordial","Rosso Vermouth","7-up","Yukon Jack│
+│","Agave syrup","Tomato Juice","Maple syrup","Limeade","Pernod","Zima"│
+│]                               
