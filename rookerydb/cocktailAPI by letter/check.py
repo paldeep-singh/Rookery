@@ -1,8 +1,11 @@
 import json
 
-collatedList = json.loads(open('.\\cleanCocktailList.json').read())
+#collatedList = json.loads(open('.\\cleanCocktailList.json').read())
 
-for drinkNumber in range(0, len(collatedList['drinks'])):
-    print(drinkNumber)
-    print(collatedList['drinks'][drinkNumber]['strDrink'])
+#for drinkNumber in range(0, len(collatedList['drinks'])):
+#    print(drinkNumber)
+ #   print(collatedList['drinks'][drinkNumber]['strDrink'])
     
+alcoholList = ["151 proof rum", "Absinthe", "Absolut Citron", "Absolut Kurant", "Absolut Peppar", "Absolut Vodka", "Advocaat", "Ale", "Allspice", "Amaretto", "Angostura Bitters", "Aperol", "Apfelkorn", "Apple Brandy", "Apple Cider", "Apple Schnapps", "Applejack", "Apricot Brandy", "Aquavit", "Anejo Rum", "Bacardi Limon", "Bailey", "Bailey's Irish Cream", "Banana Liqueur", "Beer", "Benedictine", "Bitter Lemon", "Bitters", "Black Sambuca", "Blackberry Brandy", "Blended Scotch", "Blended Whiskey", "Blue Curacao", "Bourbon", "Brandy", "Butterscotch Schnapps", "Cachaca", "Campari", "Cantaloupe", "Chambord Raspberry Liqueur", "Champagne", "Cherry Brandy", "Cherry Liqueur", "Chocolate Liqueur", "Cider", "Coconut Liqueur", "Coconut Rum", "Coffee Brandy", "Coffee Liqueur", "Cognac", "Cointreau", "Corona", "Cranberry Vodka", "Creme de Banane", "Creme de Cacao", "Creme de Cassis", "Creme de Mure", "Crown Royal", "Curacao", "Dark Creme de Cacao", "Dark Rum", "Drambuie", "Dry Vermouth", "Dubonnet Rouge", "Erin Cream", "Everclear", "Falernum", "Firewater", "Frangelico", "Galliano", "Gin", "Godiva Liqueur", "Gold Rum", "Gold Tequila", "Goldschlager", "Grain Alcohol", "Grand Marnier", "Green Chartreuse", "Green Creme de Menthe", "Guinness Stout", "Hpnotiq", "Irish Whiskey", "Islay Single Malt Scotch", "Jack Daniels", "Jagermeister", "Jim Beam", "Johnnie Walker", "Kahlua", "Kirschwasser", "Kiwi liqueur", "Kummel", "Lager", "Lemon Vodka", "Light Rum", "Lillet", "Lillet Blanc", "Lime Vodka", "Malibu Rum", "Maraschino Liqueur", "Maui", "Mezcal", "Midori Melon Liqueur", "Orange Bitters", "Orange Curacao", "Ouzo", "Passoa", "Peach Bitters", "Peach Vodka", "Peach Brandy", "Peach Schnapps", "Peachtree Schnapps", "Peppermint Schnapps", "Pernod", "Peychaud Bitters", "Pisco", "Port", "Prosecco", "Raspberry Liqueur",  "Red Chili Flakes", "Red wine", "Ricard", "Rosso Vermouth", "Rum", "Rye Whiskey", "Sambuca", "Scotch", "Sherry", "Sloe Gin", "Southern Comfort", "Spiced Rum", "St. Germain", "Strawberry Liqueur", "Strawberry Schnapps", "Sweet Vermouth", "Tennessee Whiskey", "Tequila", "Tia Maria", "Triple Sec", "Vermouth", "Vodka", "White Creme de Menthe", "White Rum", "White Wine", "Wild Turkey", "Wine", "Yellow Chartreuse","Yukon Jack", "Zima"]
+
+print(len(alcoholList))
