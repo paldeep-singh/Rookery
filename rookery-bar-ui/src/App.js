@@ -259,8 +259,8 @@ class App extends React.Component {
     return (
       <>
         <CssBaseline />
-        <Grid container spacing={3} justify="center">
-          <Grid item xs={3}>
+        <Grid container spacing={3} justify="center" wrap='wrap'>
+          <Grid item xs={10} sm={6} md={4}  lg={3} xl={3}>
             <Card variant="outlined">
               <CardContent>
                 <form noValidate autoComplete="off">
@@ -282,7 +282,7 @@ class App extends React.Component {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={10} sm={6} md={4}  lg={3} xl={3}>
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="subtitle1" align="center" paragraph={true} >
@@ -307,7 +307,7 @@ class App extends React.Component {
         </Grid>
         <CssBaseline />
         <Grid container spacing={3} justify="center">
-          <Grid item xs={3}>
+        <Grid item xs={10} sm={6} md={4} lg={3} xl={3}>
             <Card variant="outlined" >
               <CardContent>
                 <Typography variant="subtitle1" align="center" paragraph={true} >
@@ -324,11 +324,11 @@ class App extends React.Component {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={10} sm={6} md={4}  lg={3} xl={3}>
             <Card variant="outlined" >
               <CardContent>
                 <Typography variant="subtitle1" align="center" paragraph={true} >
-                  Cocktails missing one ingredient:
+                  Cocktails missing one alcohol:
               </Typography>
                 <List style={listStyles}>
 
@@ -343,8 +343,9 @@ class App extends React.Component {
               </CardContent>
             </Card>
           </Grid>
+          
         </Grid>
-
+        <p align="center">Cocktails from https://www.thecocktaildb.com/</p>
       </>
     )
   };

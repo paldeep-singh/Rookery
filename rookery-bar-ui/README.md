@@ -66,3 +66,9 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+### deploying to Microsoft Azure
+
+Run npm build
+Obtain FTP details from Azure App Services - App Name - Deployment Centre
+Transfer contents of build folder + web.config + ecosystem.config.js to wwwroot root folder
